@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Ella — Surprise from Nazal</title>
+<meta name="color-scheme" content="dark">
+
+<!-- ========== CLEAN CSS ========== -->
+<style>
+  :root{
+    --bg-0: #020315;
+    --bg-1: #071026;
+    --muted: #9aa5b1;
+    --accent-a: #ff6b9f;
+    --accent-b: #8b6bff;
+    --glass: rgba(255,255,255,0.02);
+    --max-width: 1100px;
+    --radius: 12px;
+    --shadow: 0 12px 40px rgba(2,6,23,0.55);
+  }
+
+  /* Reset & base */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:
+      radial-gradient(900px 450px at 10% 12%, rgba(255,107,159,0.04), transparent),
+      linear-gradient(180deg,var(--bg-0) 0%, var(--bg-1) 100%);
+    color:#eaf6ff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.45;
+  }
+
+  /* Page layout */
+  .wrap{max-width:var(--max-width);margin:18px auto;padding:18px}
+  .header{display:flex;gap:14px;align-items:center}
+  .logo{
+    width:72px;height:72px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:20px;
+    box-shadow:0 10px 30px rgba(139,107,255,0.10);
+  }
+  h1{margin:0;font-size:20px}
+  .sub{color:var(--muted);margin-top:4px;font-size:13px}
+
+  /* Two-column grid */
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:16px}
+  .card{background:linear-gradient(180deg,var(--glass), rgba(255,255,255,0.01));border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+
+  /* Countdown */
+  .countdown{display:flex;gap:10px;margin-top:12px}
+  .countdot{flex:1;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;text-align:center}
+  .countdot strong{display:block;font-size:20px}
+
+  /* Gallery layout (NO CROPPING: full image visible) */
+  .gallery{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap:12px;
+    margin-top:12px;
+    align-items:start;
+  }
+  .thumb{
+    border-radius:12px;
+    overflow:hidden;
+    background:#071121;
+    position:relative;
+    box-shadow:0 10px 24px rgba(2,6,23,0.45);
+  }
+  /* <-- CRITICAL: full image always visible -->
+     We DO NOT force .thumb height; images grow naturally and keep aspect ratio */
+  .thumb img{
+    display:block;
+    width:100%;
+    height:auto;           /* important: preserve full image */
+    object-fit: contain;   /* defensive: keep full image if browser supports */
+    object-position: center center;
+    background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.12));
+    transition: transform 0.45s ease;
+  }
+  .thumb video{
+    display:block;width:100%;height:auto;
+  }
+  .thumb:hover img{ transform: scale(1.02); }
+
+  /* floating words that appear over each image (pointer-events:none so clicks pass) */
+  .word-layer{
+    position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;padding:10px;gap:8px;flex-wrap:wrap;
+  }
+  .word{
+    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    padding:6px 10px;border-radius:999px;font-size:12px;color:#fff;opacity:0.98;
+    animation: floatUp 3.2s ease-in-out infinite;
+    box-shadow:0 6px 18px rgba(0,0,0,0.45);
+  }
+  .word:nth-child(2){ animation-delay: .28s }
+  .word:nth-child(3){ animation-delay: .56s }
+  .word:nth-child(4){ animation-delay: .84s }
+  @keyframes floatUp{
+    0%{ transform: translateY(8px); opacity:0 }
+    10%{ opacity:1 }
+    50%{ transform: translateY(-10px) }
+    90%{ opacity:.7 }
+    100%{ transform: translateY(-26px); opacity:0 }
+  }
+
+  /* Controls */
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .btn{background:linear-gradient(90deg,var(--accent-a),var(--accent-b));border:0;padding:10px 14px;border-radius:10px;color:#fff;cursor:pointer;font-weight:700}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+  /* Overlay reveal */
+  .overlay{position:fixed;inset:0;background:linear-gradient(180deg, rgba(2,6,20,0.6), rgba(2,6,20,0.6));display:flex;align-items:center;justify-content:center;z-index:80;opacity:0;pointer-events:none;transition:opacity .35s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .overlay-inner{max-width:920px;width:94%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:22px;box-shadow:0 30px 90px rgba(2,6,23,0.9);position:relative;overflow:hidden}
+  .typed{font-size:18px;line-height:1.6;color:#fff;min-height:140px}
+  .typeCursor{display:inline-block;width:6px;height:26px;background:linear-gradient(180deg,#fff,#ffd1e3);margin-left:8px;vertical-align:bottom;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:linear-gradient(0deg, rgba(2,6,23,0.7), rgba(2,6,23,0.7));display:flex;align-items:center;justify-content:center;z-index:110;opacity:0;pointer-events:none;transition:opacity .18s}
+  .modal.show{opacity:1;pointer-events:auto}
+  .modal .box{background:#071427;padding:14px;border-radius:12px;max-width:900px;width:92%}
+  .modal img,.modal video{max-width:100%;border-radius:10px;display:block}
+
+  /* confetti canvas */
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:100;display:none}
+
+  /* floating hearts */
+  .float-layer{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:10}
+  .heart-el{position:absolute;width:28px;height:28px;border-radius:40px;opacity:.95;transform-origin:center}
+
+  /* responsive */
+  @media (max-width:980px){
+    .grid{grid-template-columns:1fr}
+    .logo{width:60px;height:60px}
+    h1{font-size:18px}
+  }
+  @media (max-width:520px){
+    .thumb img{height:auto}
+  }
+
+  /* deter casual edit: disable right click (cosmetic only) */
+  html[data-locked="true"]{ user-select: none; -webkit-user-select:none; -ms-user-select:none; }
+</style>
+</head>
+<body data-locked="true">
+
+  <!-- ========== PAGE ========== -->
+  <div class="wrap">
+    <header class="header">
+      <div class="logo">E❤N</div>
+      <div>
+        <h1>Happy Birthday, Ella</h1>
+        <div class="sub">A cinematic surprise — from Nazal 💖</div>
+      </div>
+    </header>
+
+    <main class="grid" role="main" aria-live="polite">
+      <!-- LEFT: main content -->
+      <section class="card">
+        <h2 style="margin:0;font-size:16px">Countdown to Nov 25, 2025</h2>
+        <div class="countdown" id="countdown" aria-hidden="false" style="margin-top:10px">
+          <div class="countdot"><strong id="d">00</strong><span>Days</span></div>
+          <div class="countdot"><strong id="h">00</strong><span>Hours</span></div>
+          <div class="countdot"><strong id="m">00</strong><span>Minutes</span></div>
+          <div class="countdot"><strong id="s">00</strong><span>Seconds</span></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:0;font-size:15px">A note to Ella</h3>
+          <p id="loveNote" style="margin-top:8px;color: #eaf6ff;">
+            Ella — my sweetest pookie, every moment with you feels like a gift. Today and always I celebrate your laughter and the warmth you bring into my life. Love, Nazal.
+          </p>
+        </div>
+
+        <!-- Gallery: replace the <img src=""> with your own file names (same folder) -->
+        <div style="margin-top:14px">
+          <h3 style="margin:0;font-size:15px">Memory Gallery — add your photos below</h3>
+          <div class="gallery" id="gallery" aria-label="Memory gallery">
+            <!-- Example placeholders (SVG). Replace each <div class="thumb"> with:
+                 <div class="thumb"><img src="ella1.jpg" alt=""><div class="word-layer">...words...</div></div>
+                 Put your image files in the same folder as this HTML. -->
+            <div class="thumb" data-placeholder>
+              <!-- SVG placeholder -->
+              <svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block">
+                <rect width="100%" height="100%" fill="#0b1220"/>
+                <g transform="translate(15,5)"><circle cx="30" cy="35" r="18" fill="#ff6b9f"/></g>
+              </svg>
+              <div class="word-layer" aria-hidden="true">
+                <div class="word">Love</div><div class="word">Ella</div><div class="word">Forever</div>
+                <image src="ella1.png"></image>
+            </div>
+            </div>
+
+            <div class="thumb" data-placeholder>
+              <svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block">
+                <rect width="100%" height="100%" fill="#071121"/>
+                <g transform="translate(16,8)"><path d="M20 30 C20 20,34 18,36 28 C54 18,54 28,36 52" fill="#ff6b9f"/></g>
+              </svg>
+              <div class="word-layer" aria-hidden="true">
+                <div class="word">My Heart</div><div class="word">Nazal</div><div class="word">Always</div>
+              </div>
+            </div>
+
+            <div class="thumb" data-placeholder>
+              <svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block">
+                <rect width="100%" height="100%" fill="#071427"/>
+                <g transform="translate(20,10)"><circle cx="20" cy="20" r="6" fill="#ffd1e3"/></g>
+              </svg>
+              <div class="word-layer" aria-hidden="true">
+                <div class="word">Us</div><div class="word">Always</div><div class="word">Forever</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- controls -->
+          <div class="controls" style="margin-top:12px">
+            <input id="fileInput" type="file" accept="image/*,video/*" multiple style="display:none">
+            <button class="btn" id="uploadBtn" aria-label="Upload photos">Upload photos/videos</button>
+            <button class="btn ghost" id="clearGallery">Clear gallery</button>
+            <button class="btn ghost" id="slideshowBtn">Start slideshow</button>
+            <div style="margin-left:auto;color:var(--muted);font-size:13px">Tip: drop your photos onto this window</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: controls & reveal -->
+      <aside class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div style="border-radius:10px;padding:12px;background:linear-gradient(135deg, rgba(255,107,159,0.06), rgba(139,107,255,0.04))">
+          <h3 style="margin:0">Open my heart</h3>
+          <p style="color:var(--muted);margin-top:8px;font-size:13px">Tap below when you're ready — or the surprise auto-starts when the countdown hits zero (if the page is open).</p>
+          <div style="display:flex;justify-content:center;margin-top:10px">
+            <button id="openHeart" class="btn" aria-label="Reveal surprise">Reveal the surprise 💝</button>
+          </div>
+          <div id="statusHint" style="color:var(--muted);margin-top:8px;font-size:13px;text-align:center"></div>
+        </div>
+
+        <div style="border-radius:10px;padding:12px" aria-hidden="false">
+          <h3 style="margin:0">Sound</h3>
+          <p style="color:var(--muted);margin-top:8px;font-size:13px">A gentle romantic instrumental synthesizes and plays when you reveal. Tap Reveal to allow audio on mobile.</p>
+        </div>
+
+        <div style="border-radius:10px;padding:12px">
+          <h3 style="margin:0">Share & Tips</h3>
+          <ol style="padding-left:18px;margin-top:8px;color:var(--muted);font-size:13px">
+            <li>To fix images permanently: replace placeholders inside <code>&lt;div id="gallery"&gt;</code> with <code>&lt;div class="thumb"&gt;&lt;img src="ella1.jpg"&gt;...&lt;/div&gt;</code></li>
+            <li>Open this file in Chrome/Edge/Safari (mobile: tap Reveal to start audio).</li>
+          </ol>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted);font-size:13px">Made with ❤️ by Nazal — Nov 25, 2025</footer>
+  </div>
+
+  <!-- overlay (reveal) -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="overlay-inner" role="dialog" aria-modal="true" aria-label="Surprise dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:800;font-size:18px">For Ella — A special moment</div>
+        <div style="font-size:13px;color:var(--muted)">Made with love — Nazal</div>
+      </div>
+
+      <div style="display:flex;gap:16px;margin-top:14px;align-items:center">
+        <div style="flex:1">
+          <div class="typed" id="typedText" aria-live="polite"></div>
+        </div>
+        <div style="width:320px">
+          <div id="playerViz" style="width:100%;height:160px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#000,#0b0b12);color:#fff;font-weight:700">
+            Romantic instrumental
+          </div>
+          <div style="margin-top:10px;color:var(--muted);font-size:13px;text-align:center">Instrumental — chorus-like (~35s)</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+        <button id="replayMsg" class="btn ghost small">Replay messages</button>
+        <button id="endSurprise" class="btn small">End Surprise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal viewer -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong id="modalTitle">Memory</strong>
+        <button id="closeModal" class="btn ghost small">Close</button>
+      </div>
+      <div id="modalContent" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- confetti canvas -->
+  <canvas id="confetti"></canvas>
+
+  <!-- floating hearts container -->
+  <div class="float-layer" id="floatLayer" aria-hidden="true"></div>
+
+<!-- ========== SCRIPT ========== -->
+<script>
+/* -------------------------
+   SMALL HELPERS
+   ------------------------- */
+const $ = id => document.getElementById(id);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+
+/* -------------------------
+   Personalization
+   ------------------------- */
+const RECIPIENT = 'Ella', SENDER = 'Nazal';
+const BDAY = new Date('2025-11-25T00:00:00');
+document.title = `For ${RECIPIENT} — Surprise from ${SENDER}`;
+
+/* -------------------------
+   Countdown
+   ------------------------- */
+function updateCountdown(){
+  const now = new Date();
+  let diff = Math.max(0, BDAY - now);
+  const days = Math.floor(diff / (1000*60*60*24)); diff -= days*(1000*60*60*24);
+  const hours = Math.floor(diff / (1000*60*60)); diff -= hours*(1000*60*60);
+  const mins = Math.floor(diff / (1000*60)); diff -= mins*(1000*60);
+  const secs = Math.floor(diff/1000);
+  $('d').textContent = String(days).padStart(2,'0');
+  $('h').textContent = String(hours).padStart(2,'0');
+  $('m').textContent = String(mins).padStart(2,'0');
+  $('s').textContent = String(secs).padStart(2,'0');
+
+  if(diff <= 0 && !window._triggeredOnce){
+    triggerReveal();
+  }
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* -------------------------
+   Gallery: upload, drag & drop, clear, modal
+   ------------------------- */
+const gallery = (function(){ return document.querySelector('.gallery'); })();
+const fileInput = $('fileInput'), uploadBtn = $('uploadBtn');
+
+uploadBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  const files = Array.from(e.target.files || []);
+  files.forEach(f => gallery.appendChild(makeThumbFromFile(f)));
+  fileInput.value = '';
+});
+
+// drag & drop (whole document)
+['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, {passive:false}));
+document.addEventListener('drop', e => {
+  e.preventDefault(); e.stopPropagation();
+  const dt = e.dataTransfer; if(!dt) return;
+  const files = Array.from(dt.files || []);
+  files.forEach(f => gallery.appendChild(makeThumbFromFile(f)));
+}, {passive:false});
+
+function makeThumbFromFile(file){
+  const thumb = document.createElement('div'); thumb.className = 'thumb';
+  const reader = new FileReader();
+  if(file.type.startsWith('image/')){
+    reader.onload = ev => {
+      thumb.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      img.alt = file.name || '';
+      thumb.appendChild(img);
+      thumb.appendChild(makeWordLayer()); // add floating words automatically
+    };
+    reader.readAsDataURL(file);
+  } else if(file.type.startsWith('video/')){
+    reader.onload = ev => {
+      thumb.innerHTML = '';
+      const v = document.createElement('video');
+      v.src = ev.target.result; v.controls = true; v.autoplay = false;
+      thumb.appendChild(v);
+      thumb.appendChild(makeWordLayer());
+    };
+    reader.readAsDataURL(file);
+  } else {
+    thumb.textContent = 'Unsupported';
+  }
+  thumb.addEventListener('click', () => openModal(file.name, thumb.querySelector('img')?.src || thumb.querySelector('video')?.src));
+  return thumb;
+}
+
+$('clearGallery').addEventListener('click', ()=> {
+  // restore placeholders
+  gallery.innerHTML = '';
+  gallery.appendChild(createPlaceholder('rose'));
+  gallery.appendChild(createPlaceholder('hearts'));
+  gallery.appendChild(createPlaceholder('stars'));
+});
+
+$('slideshowBtn').addEventListener('click', ()=>{
+  const items = Array.from(gallery.querySelectorAll('.thumb img, .thumb video')).map(n => n.src).filter(Boolean);
+  if(!items.length) { alert('Please add photos first for slideshow.'); return; }
+  let i = 0; openModal('Slideshow', items[0]);
+  const timer = setInterval(()=> { i = (i+1) % items.length; openModal('Slideshow', items[i]); }, 2600);
+  const closer = ()=> { clearInterval(timer); $('closeModal').removeEventListener('click', closer); };
+  $('closeModal').addEventListener('click', closer);
+});
+
+/* placeholders */
+function createPlaceholder(kind){
+  const d = document.createElement('div'); d.className = 'thumb';
+  if(kind === 'rose'){
+    d.innerHTML = `<svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="100%" height="100%" fill="#0b1220"/><g transform="translate(15,5)"><circle cx="30" cy="35" r="18" fill="#ff6b9f"/></g></svg>`;
+  } else if(kind === 'hearts'){
+    d.innerHTML = `<svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="100%" height="100%" fill="#071121"/><g transform="translate(16,8)"><path d="M20 30 C20 20,34 18,36 28 C54 18,54 28,36 52" fill="#ff6b9f"/></g></svg>`;
+  } else {
+    d.innerHTML = `<svg viewBox="0 0 120 80" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="100%" height="100%" fill="#071427"/><g transform="translate(20,10)"><circle cx="20" cy="20" r="6" fill="#ffd1e3"/></g></svg>`;
+  }
+  d.appendChild(makeWordLayer());
+  return d;
+}
+(function initPlaceholders(){ gallery.innerHTML=''; gallery.appendChild(createPlaceholder('rose')); gallery.appendChild(createPlaceholder('hearts')); gallery.appendChild(createPlaceholder('stars')); })();
+
+function makeWordLayer(){
+  const words = ['Love','Forever','Always','My Heart','Ella','Nazal','Us'];
+  const layer = document.createElement('div'); layer.className = 'word-layer';
+  // pick 3 words, ensure Ella present
+  const pick = ['Ella'];
+  pick.push(words[Math.floor(Math.random()*(words.length-2))]);
+  if(Math.random() > 0.5) pick.push('Nazal');
+  [...new Set(pick)].slice(0,5).forEach(w => {
+    const el = document.createElement('div'); el.className = 'word'; el.textContent = w;
+    layer.appendChild(el);
+  });
+  return layer;
+}
+
+/* modal viewer */
+function openModal(title, src){
+  $('modalTitle').textContent = title || 'Memory';
+  const content = $('modalContent'); content.innerHTML = '';
+  if(src && src.startsWith('data:image')){ const img = document.createElement('img'); img.src = src; content.appendChild(img); }
+  else if(src && src.startsWith('data:video')){ const v = document.createElement('video'); v.src = src; v.controls = true; v.autoplay = true; content.appendChild(v); }
+  else content.innerHTML = '<div style="padding:12px;color:var(--muted)">No preview available</div>';
+  document.querySelector('.modal').classList.add('show');
+}
+$('closeModal').addEventListener('click', ()=> { document.querySelector('.modal').classList.remove('show'); $('modalContent').innerHTML=''; });
+document.querySelector('.modal').addEventListener('click', e => { if(e.target === document.querySelector('.modal')) { document.querySelector('.modal').classList.remove('show'); $('modalContent').innerHTML=''; } });
+
+/* -------------------------
+   Floating hearts (soft)
+   ------------------------- */
+const floatLayer = $('floatLayer');
+function spawnHeart(){
+  const h = document.createElement('div'); h.className = 'heart-el';
+  const size = 12 + Math.random()*36; h.style.width = size + 'px'; h.style.height = size + 'px';
+  h.style.left = (Math.random()*100) + '%';
+  h.style.top = (110 + Math.random()*40) + '%';
+  h.style.background = `linear-gradient(135deg, rgba(255,107,159,0.98), rgba(139,107,255,0.96))`;
+  document.body.appendChild(h);
+  const duration = 4500 + Math.random()*7000;
+  h.animate([
+    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+    { transform: `translateY(-${560 + Math.random()*200}px) rotate(${Math.random()*360}deg)`, opacity: 0 }
+  ], { duration, easing: 'cubic-bezier(.2,.7,.2,1)'});
+  setTimeout(()=> h.remove(), duration + 80);
+}
+setInterval(spawnHeart, 800);
+
+/* -------------------------
+   Confetti (canvas)
+   ------------------------- */
+const confCanvas = $('confetti'), confCtx = confCanvas.getContext('2d');
+let confPieces = [];
+function resizeCanvas(){ confCanvas.width = innerWidth; confCanvas.height = innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+
+function startConfetti(){
+  confPieces = [];
+  const count = Math.min(300, Math.floor((innerWidth + innerHeight)/10));
+  for(let i=0;i<count;i++){
+    confPieces.push({ x: Math.random()*innerWidth, y: Math.random()*-innerHeight, vx:(Math.random()-0.5)*8, vy:2+Math.random()*6, size:6+Math.random()*8, color:`hsl(${Math.random()*40+300},80%,60%)`, rot:Math.random()*360, rotSpeed:(Math.random()-0.5)*10 });
+  }
+  confCanvas.style.display = 'block';
+  requestAnimationFrame(drawConfetti);
+}
+function drawConfetti(){
+  confCtx.clearRect(0,0,confCanvas.width,confCanvas.height);
+  confPieces.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.vx *= 0.995; p.rot += p.rotSpeed;
+    confCtx.save(); confCtx.translate(p.x,p.y); confCtx.rotate(p.rot*Math.PI/180); confCtx.fillStyle = p.color; confCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6); confCtx.restore();
+  });
+  confPieces = confPieces.filter(p=>p.y < innerHeight + 50);
+  if(confPieces.length > 0) requestAnimationFrame(drawConfetti);
+  else confCanvas.style.display = 'none';
+}
+
+/* -------------------------
+   Typed messages (sequence)
+   ------------------------- */
+const typedEl = $('typedText');
+const messages = [
+  "Ella… from the first day I met you, everything changed.",
+  "Your smile is my favorite reason to be happy.",
+  "Every heartbeat says your name.",
+  "You are my forever — Love, Nazal 💖"
+];
+let typingTimers = [];
+function typeSequence(msgs, charSpeed=38, pauseBetween=700){
+  typingTimers.forEach(t => clearTimeout(t)); typingTimers=[];
+  typedEl.innerHTML = '';
+  let offset = 0;
+  msgs.forEach(m => {
+    typingTimers.push(setTimeout(()=> typeOne(m, charSpeed), offset));
+    offset += m.length * charSpeed + pauseBetween + 200;
+  });
+}
+function typeOne(text, speed){
+  typedEl.innerHTML=''; let i=0;
+  (function step(){
+    typedEl.innerHTML = `<div>${escapeHtml(text.slice(0,i))}</div><span class="typeCursor"></span>`;
+    if(i++ <= text.length) typingTimers.push(setTimeout(step, speed + Math.random()*20));
+    else typedEl.innerHTML = `<div>${escapeHtml(text)}</div>`;
+  })();
+}
+
+/* -------------------------
+   WebAudio instrumental (synthesized, chorus-like)
+   ------------------------- */
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null, masterGain = null, isPlaying = false;
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new AudioContext();
+  masterGain = audioCtx.createGain(); masterGain.gain.value = 0.72; masterGain.connect(audioCtx.destination);
+}
+function makeReverbBuffer(seconds=1.2){
+  const rate = audioCtx.sampleRate; const length = Math.floor(rate * seconds);
+  const buffer = audioCtx.createBuffer(2, length, rate);
+  for(let c=0;c<2;c++){
+    const data = buffer.getChannelData(c);
+    for(let i=0;i<length;i++) data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/length, 3.2);
+  }
+  return buffer;
+}
+function playInstrumental(durationSec = 36){
+  initAudio();
+  if(isPlaying) return;
+  isPlaying = true;
+  const convolver = audioCtx.createConvolver(); convolver.buffer = makeReverbBuffer(1.2); convolver.connect(masterGain);
+  function playChord(rootFreq, len){
+    const freqs = [rootFreq, rootFreq * Math.pow(2,4/12), rootFreq * 2];
+    const now = audioCtx.currentTime;
+    freqs.forEach((f, idx) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = idx===1 ? 'triangle' : 'sine';
+      o.frequency.value = f;
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(convolver); g.connect(masterGain);
+      const attack = 0.08, release = 0.8;
+      g.gain.exponentialRampToValueAtTime(0.24/(idx+1), now + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + len - release);
+      o.start(now); o.stop(now + len + 0.1);
+    });
+  }
+  const progression = [349.23, 293.66, 233.08, 261.63]; // warm-prog
+  const chordLen = 3.6;
+  let t = 0;
+  const loops = Math.max(1, Math.floor(durationSec / (progression.length * chordLen)));
+  for(let loop=0; loop<loops; loop++){
+    progression.forEach(r => { setTimeout(()=> playChord(r, chordLen), t * 1000); t += chordLen; });
+  }
+  // light arpeggio
+  const notes = [440,392,349.23,392,440,523,440];
+  notes.forEach((n, idx) => {
+    const start = audioCtx.currentTime + 0.6 + idx * 0.45;
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = n; g.gain.value = 0.0001;
+    o.connect(g); g.connect(convolver); g.connect(masterGain);
+    g.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+    o.start(start); o.stop(start + 0.6);
+  });
+  setTimeout(()=> { isPlaying = false; }, durationSec * 1000 + 500);
+}
+
+/* -------------------------
+   Reveal sequence
+   ------------------------- */
+const overlay = document.querySelector('.overlay');
+const openHeart = $('openHeart');
+openHeart.addEventListener('click', ()=> triggerReveal());
+
+let revealActive = false;
+async function triggerReveal(){
+  if(revealActive) return;
+  revealActive = true;
+  window._triggeredOnce = true;
+  $('statusHint').textContent = 'Preparing your surprise…';
+  overlay.classList.add('show');
+  startConfetti(); for(let i=0;i<6;i++) spawnHeart();
+  typeSequence(messages, 38, 800);
+  try { playInstrumental(36); } catch(e){ try{ initAudio(); playInstrumental(36); }catch(_){} }
+  $('statusHint').textContent = '';
+}
+
+/* replay & end */
+$('replayMsg').addEventListener('click', ()=> { typeSequence(messages, 36, 700); try{ playInstrumental(36); }catch(_){} });
+$('endSurprise').addEventListener('click', ()=> { overlay.classList.remove('show'); confPieces = []; confCanvas.style.display='none'; revealActive=false; });
+
+/* keyboard accessibility */
+openHeart.addEventListener('keydown', e => { if(e.key==='Enter' || e.key===' ') triggerReveal(); });
+
+/* resume audio on first gesture for mobile */
+['click','touchstart'].forEach(evt => document.addEventListener(evt, ()=>{ try{ if(audioCtx && audioCtx.state==='suspended') audioCtx.resume(); }catch(_){} }, {once:true}));
+
+/* -------------------------
+   Minor deterrents: disable right-click (cosmetic only)
+   ------------------------- */
+document.addEventListener('contextmenu', e => { e.preventDefault(); alert('This page is a surprise — please do not inspect or alter it.'); });
+
+/* End of script */
+</script>
+</body>
+</html>
